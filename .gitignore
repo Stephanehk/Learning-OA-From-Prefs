@@ -1,0 +1,13 @@
+# Configuration and OS files.
+.DS_Store
+
+# Python directories.
+/venv
+**/__pycache__
+
+# Temporary test scripts.
+/scripts/temp*
+
+# Output data directories.
+data/results/*
+data/temp_data/*
