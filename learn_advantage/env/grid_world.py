@@ -7,7 +7,8 @@ import numpy as np
 
 
 class Entity(enum.IntEnum):
-    BLANK = enum.auto()
+    """Integer values correspond to the entity type."""
+    BLANK = 0
     GOAL = enum.auto()
     HOUSE = enum.auto()
     SHEEP = enum.auto()
@@ -69,42 +70,6 @@ class GridWorldEnv:
 
     def positions(self):
         return itertools.product(self.row_iter(), self.column_iter())
-
-    def get_entity(self, state):
-        if state == 0:
-            return Entity.BLANK
-        if state == 1:
-            return Entity.GOAL
-        if state == 2:
-            # house
-            return Entity.HOUSE
-        if state == 3:
-            # sheep
-            return Entity.SHEEP
-        if state == 4:
-            # coin
-            return Entity.COIN
-        if state == 5:
-            # road block
-            return Entity.ROAD_BLOCK
-        if state == 6:
-            # mud area
-            return Entity.MUD
-        if state == 7:
-            # mud area + flag
-            return Entity.MUD_GOAL
-        if state == 8:
-            # mud area + house
-            return Entity.MUD_HOUSE
-        if state == 9:
-            # mud area + sheep
-            return Entity.MUD_SHEEP
-        if state == 10:
-            # mud area + coin
-            return Entity.MUD_COIN
-        if state == 11:
-            # mud area + roadblock
-            return Entity.MUD_ROAD_BLOCK
 
     def generate_transition_probs(self):
         """
@@ -199,50 +164,44 @@ class GridWorldEnv:
                         reward_function[x][y][a_i] = reward_arr[5]
                     continue
 
-                obj = self.get_entity(self.board[next_state[0]][next_state[1]])
+                board_state = self.board[x][y]
+                next_board_state = self.board[next_state[0]][next_state[1]]
+                obj = Entity(next_board_state)
 
                 if obj == Entity.BLANK:
-                    reward_function[x][y][a_i] = reward_arr[0]  # blank
+                    reward_function[x][y][a_i] = reward_arr[0]
                 elif obj == Entity.GOAL:
-                    reward_function[x][y][a_i] = reward_arr[1]  # goal
+                    reward_function[x][y][a_i] = reward_arr[1]
                 elif obj == Entity.HOUSE:
-                    if self.board[x][y] < 6:
+                    if board_state < 6:
                         reward_function[x][y][a_i] = reward_arr[0]  # blocking state
                     else:
                         reward_function[x][y][a_i] = reward_arr[5]
                 elif obj == Entity.SHEEP:
-                    reward_function[x][y][a_i] = reward_arr[2]  # sheap
+                    reward_function[x][y][a_i] = reward_arr[2]
                 elif obj == Entity.COIN:
-                    reward_function[x][y][a_i] = reward_arr[3] + reward_arr[0]  # coin
+                    reward_function[x][y][a_i] = reward_arr[3] + reward_arr[0]
                 elif obj == Entity.ROAD_BLOCK:
-                    reward_function[x][y][a_i] = (
-                        reward_arr[4] + reward_arr[0]
-                    )  # roadblock
+                    reward_function[x][y][a_i] = reward_arr[4] + reward_arr[0]
                 elif obj == Entity.MUD:
-                    reward_function[x][y][a_i] = reward_arr[5]  # mud
+                    reward_function[x][y][a_i] = reward_arr[5]
                 elif obj == Entity.MUD_GOAL:
-                    reward_function[x][y][a_i] = reward_arr[1]  # goal
+                    reward_function[x][y][a_i] = reward_arr[1]
                 elif obj == Entity.MUD_HOUSE:
-                    if self.board[x][y] < 6:
+                    if board_state < 6:
                         reward_function[x][y][a_i] = reward_arr[
                             0
                         ]  # blocking state + mud
                     else:
                         reward_function[x][y][a_i] = reward_arr[5]
                 elif obj == Entity.MUD_SHEEP:
-                    reward_function[x][y][a_i] = reward_arr[2]  # sheep
+                    reward_function[x][y][a_i] = reward_arr[2]
                 elif obj == Entity.MUD_COIN:
-                    reward_function[x][y][a_i] = (
-                        reward_arr[3] + reward_arr[5]
-                    )  # coin + mud
+                    reward_function[x][y][a_i] = reward_arr[3] + reward_arr[5]
                 elif obj == Entity.MUD_ROAD_BLOCK:
-                    reward_function[x][y][a_i] = (
-                        reward_arr[4] + reward_arr[5]
-                    )  # roadblock + mud
+                    reward_function[x][y][a_i] = reward_arr[4] + reward_arr[5]
                 else:
-                    raise ValueError(
-                        f"Unknown state {self.board[next_state[0]][next_state[1]]}"
-                    )
+                    raise ValueError(f"Unknown state {next_board_state}")
 
         if set_global:
             self.prev_reward_function = self.reward_function
@@ -311,7 +270,7 @@ class GridWorldEnv:
 
         """
         reward_feature = np.zeros(self.feature_size)
-        obj = self.get_entity(self.board[x][y])
+        obj = Entity(self.board[x][y])
         if obj == Entity.BLANK:
             reward_feature[0] = 1
         elif obj == Entity.GOAL:
@@ -376,12 +335,7 @@ class GridWorldEnv:
         x, y = s
         done = False
 
-        if (
-            self.board[x][y] == 3
-            or self.board[x][y] == 1
-            or self.board[x][y] == 7
-            or self.board[x][y] == 9
-        ):
+        if self.is_terminal(x, y):
             done = True
 
         transitions = self.transition_probs[x][y][a_index]
@@ -401,7 +355,7 @@ class GridWorldEnv:
 
     def found_coin(self, phi):
         """
-        Given a state feature, returns true if the state corrosponds to a state containing a coin.
+        Given a state feature, returns true if the state corresponds to a state containing a coin.
 
         Input:
         - phi: the inputted state feature
@@ -412,7 +366,7 @@ class GridWorldEnv:
 
     def found_goal(self, phi):
         """
-        Given a state feature, returns true if the state corrosponds to a state containing the goal.
+        Given a state feature, returns true if the state corresponds to a state containing the goal.
 
         Input:
         - phi: the inputted state feature
@@ -455,12 +409,7 @@ class GridWorldEnv:
             x = x + a[0]
             y = y + a[1]
         next_state = (x, y)
-        if (
-            self.board[x][y] == 3
-            or self.board[x][y] == 1
-            or self.board[x][y] == 7
-            or self.board[x][y] == 9
-        ):
+        if self.is_terminal(x, y):
             done = True
 
         reward_feature = self.get_reward_feature(x, y, prev_x, prev_y)

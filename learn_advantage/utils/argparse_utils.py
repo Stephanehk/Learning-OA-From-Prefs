@@ -179,7 +179,7 @@ def parse_args(arg: ArgsType = ArgsType.DEFAULT) -> argparse.Namespace:
             help="Loads the weight vector that was saved after training for this many epochs. Should be one of the followin: [1,10,100,200,500,1000,10000,30000]",
         )
 
-    if arg == ArgsType.SCALED_RETURNS or arg == ArgsType.STATS_TEST:
+    if arg in {ArgsType.SCALED_RETURNS, ArgsType.STATS_TEST}:
         parser.add_argument(
             "--output_dir",
             default="data/results/scaled_returns/",
@@ -194,11 +194,7 @@ def parse_args(arg: ArgsType = ArgsType.DEFAULT) -> argparse.Namespace:
             help="Extra information included when saving training info",
         )
 
-    if (
-        arg == ArgsType.FIG_5
-        or arg == ArgsType.SCALED_RETURNS
-        or arg == ArgsType.STATS_TEST
-    ):
+    if arg in {ArgsType.FIG_5, ArgsType.SCALED_RETURNS, ArgsType.STATS_TEST}:
         parser.add_argument(
             "--modes",
             type=str,
@@ -206,7 +202,7 @@ def parse_args(arg: ArgsType = ArgsType.DEFAULT) -> argparse.Namespace:
             help="A delimited list containing the preference types (ie: either deterministic, stochastic, or both)",
         )
 
-    if arg == ArgsType.DEFAULT or arg == ArgsType.FIG_6 or arg == ArgsType.STATS_TEST:
+    if arg in {ArgsType.DEFAULT, ArgsType.FIG_6, ArgsType.STATS_TEST}:
         parser.add_argument("--LR", default=0.5, type=float, help="Learning rate")
 
         parser.add_argument(

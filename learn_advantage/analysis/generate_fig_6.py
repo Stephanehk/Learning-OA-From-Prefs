@@ -228,10 +228,7 @@ def main():
         r_a_hat_y_areas.append(r_a_hat_y_area)
         r_r_true_y_areas.append(r_r_true_y_area)
 
-    r_a_hat_y_areas = np.array(r_a_hat_y_areas)
-    r_r_true_y_areas = np.array(r_r_true_y_areas)
-
-    res1 = wilcoxon(r_a_hat_y_areas - r_r_true_y_areas)
+    res1 = wilcoxon(np.asarray(r_a_hat_y_areas) - np.asarray(r_r_true_y_areas))
 
     print("Wilcoxon results, area_above(r_hat=A*_hat(s,a)) -  area_above(r_hat=r)")
     print("w=", res1.statistic)

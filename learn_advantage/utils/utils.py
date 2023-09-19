@@ -19,8 +19,7 @@ def is_in_blocked_area(x, y, board):
     - x,y: input coordinates
     - board: the board configuration
     """
-    val = board[x][y]
-    return val == 2 or val == 8
+    return board[x][y] in {2, 8}
 
 
 def sigmoid(val):

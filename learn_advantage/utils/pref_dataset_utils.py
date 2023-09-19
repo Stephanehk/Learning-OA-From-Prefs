@@ -65,7 +65,6 @@ def generate_synthetic_prefs(
     for r, x, ses in zip(rewards, pr_X, sess):
         x = list(x)
         if args.preference_model == "pr" and args.preference_assum == "pr":
-            x_f = [list(x[0][0:6]), list(x[1][0:6])]
             x_orig = [list(x[0]), list(x[1])]
         # change x to include start end state for each segectory
         if args.preference_model == "regret" and args.preference_assum == "regret":
@@ -82,7 +81,6 @@ def generate_synthetic_prefs(
                     np.array(states[index][1][0 : len(states[index][1]) - 1]).flatten()
                 )
 
-                x_f = [x[0], x[1]]
                 x_orig = [list(x[0]), list(x[1])]
 
             else:
@@ -91,21 +89,17 @@ def generate_synthetic_prefs(
 
                 x[1] = list(x[1])
                 x[1].extend([ses[1][0][0], ses[1][0][1], ses[1][1][0], ses[1][1][1]])
-                x_f = [x[0], x[1]]
                 x_orig = [list(x[0]), list(x[1])]
         if args.preference_model == "pr" and args.preference_assum == "regret":
             if args.include_actions:
                 raise ValueError("Unsupported use of actions.")
-            else:
-                x[0] = list(x[0])
-                x[0].extend([ses[0][0][0], ses[0][0][1], ses[0][1][0], ses[0][1][1]])
+            x[0] = list(x[0])
+            x[0].extend([ses[0][0][0], ses[0][0][1], ses[0][1][0], ses[0][1][1]])
 
-                x[1] = list(x[1])
-                x[1].extend([ses[1][0][0], ses[1][0][1], ses[1][1][0], ses[1][1][1]])
-                x_f = [x[0], x[1]]
-                x_orig = [list(x[0]), list(x[1])]
+            x[1] = list(x[1])
+            x[1].extend([ses[1][0][0], ses[1][0][1], ses[1][1][0], ses[1][1][1]])
+            x_orig = [list(x[0]), list(x[1])]
         if args.preference_model == "regret" and args.preference_assum == "pr":
-            x_f = [list(x[0]), list(x[1])]
             x_orig = [list(x[0]), list(x[1])]
 
         t1_ss = [int(ses[0][0][0]), int(ses[0][0][1])]

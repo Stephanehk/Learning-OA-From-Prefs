@@ -42,10 +42,10 @@ def main():
             paired_oaf_scaled_rets = []
             paired_pr_scaled_rets = []
             # loop through the directory containing expirements with and without transitions from the absorbing state
-            for dir_name in [
+            for dir_name in (
                 "data/results/WITH_ABSORBING_TRANSITIONS_",
                 "data/results/NO_ABSORBING_TRANSITIONS_",
-            ]:
+            ):
                 base_name_parts = [
                     f"{extra_details_for_saving}",
                     f"{extra_details}",
