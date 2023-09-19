@@ -24,23 +24,18 @@ def randomly_place_item_exact(env, item_id, N, height, width):
         env.board[x][y] = item_id
 
 
-def contains_coords(arr1, arr2):
-    return any(a[0] == arr2[0] and a[1] == arr2[1] for a in arr1)
-
-
 def is_in_gated_area(x, y, board):
     """
     Checks if coordinates are in the brick area
     """
-    val = board[x][y]
-    return val >= 6
+    return board[x][y] >= 6
 
 
 def is_in_blocked_area(x, y, board):
     """
     Checks if coordinates are in a blocked area (ie: a house)
     """
-    return board[x][y] in (2, 8)
+    return board[x][y] in {2, 8}
 
 
 def find_end_state(traj, board):
@@ -250,7 +245,6 @@ def create_traj(
             traj.append(a)
             a_i = GridWorldEnv.find_action_index(a)
             t_partial_r_sum += env.reward_function[x][y][a_i]
-            # and not (contains_coords(oneway_coords, [x,y]) and not contains_coords(oneway_coords, [x+a[0],y+a[1]]))
             if (
                 (
                     x + a[0] >= 0
@@ -506,7 +500,7 @@ def generate_MDP(prob=False, n_length_trajs=False):
         )
         changed_opt_policy = check_same_policy(prev_Qs, Qs, env)
         if changed_opt_policy:
-            raise ValueError(f"Optimal policy has changed.")
+            raise ValueError("Optimal policy has changed.")
 
     if prob:
         all_X, all_r, all_ses, all_trajs, _, _ = subsample_env_trajs(env)
@@ -516,7 +510,7 @@ def generate_MDP(prob=False, n_length_trajs=False):
         all_rs = []
         all_sess = []
         all_trajss = []
-        for traj_length in [3, 6, 9, 12, 15]:
+        for traj_length in (3, 6, 9, 12, 15):
             all_X, all_r, all_ses, all_trajs, _, _ = subsample_env_n_length_trajs(
                 env, traj_length=traj_length
             )
@@ -604,7 +598,7 @@ def subsample_env_trajs(env, traj_length=3):
     if traj_length == 3:
         all_action_seqs = list(itertools.product(env.actions, env.actions, env.actions))
     else:
-        raise ValueError(f"Unsuported trajectory length")
+        raise ValueError("Unsupported trajectory length")
 
     V, _ = value_iteration(
         rew_vec=np.array(env.reward_array), gamma=0.999, env=env, is_set=True
@@ -890,7 +884,7 @@ def get_env_trajs(env, traj_length=3):
                 traj1_ts_y,
                 _,
             ) = create_traj(t1_s0_x, t1_s0_y, action_seq_1, traj_length, env, V)
-            # Does this makes sense, shouldn't t1_partial_r_sum be a float?
+            # TODO Fix comparison between float and bool.
             if t1_partial_r_sum == False:
                 continue
 
@@ -906,7 +900,7 @@ def get_env_trajs(env, traj_length=3):
                 traj2_ts_y,
                 _,
             ) = create_traj(t2_s0_x, t2_s0_y, action_seq_2, traj_length, env, V)
-            # Does this makes sense, shouldn't t2_partial_r_sum be a float?
+            # TODO Fix comparison between float and bool.
             if t2_partial_r_sum == False:
                 continue
 
@@ -999,6 +993,7 @@ def main():
             action_succ_feats=sa_succ_feats,
             gt_rew_vec=gt_rew_vec,
             gamma=gamma,
+            env=env,
         )
 
         with open("random_MDPs/MDP_" + str(trial) + "all_trajss.npy", "wb") as f:
