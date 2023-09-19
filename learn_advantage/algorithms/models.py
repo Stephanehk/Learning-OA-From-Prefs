@@ -2,6 +2,7 @@ import torch
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
 class RewardFunctionPR(torch.nn.Module):
     """
     The partial return reward learning model
@@ -21,6 +22,7 @@ class RewardFunctionPR(torch.nn.Module):
         right_pred = torch.sigmoid(torch.subtract(pr[:, 1:2], pr[:, 0:1]))
         phi_logit = torch.stack([left_pred, right_pred], axis=1)
         return phi_logit
+
 
 class RewardFunctionRegret(torch.nn.Module):
     """
@@ -81,7 +83,9 @@ class RewardFunctionRegret(torch.nn.Module):
 
     def forward(self, phi):
         if self.include_actions:
-            raise ValueError("Current code release does not support computing per time-step regret")
+            raise ValueError(
+                "Current code release does not support computing per time-step regret"
+            )
         else:
             pr = torch.squeeze(self.linear1(phi[:, :, 0 : self.n_features].double()))
             ss_x = torch.squeeze(phi[:, :, self.n_features : self.n_features + 1])

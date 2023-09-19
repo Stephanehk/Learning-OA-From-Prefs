@@ -318,7 +318,6 @@ def generate_stoch_MDP(r_win):
                     - sheep_trans_prob,
                 }
 
-    # TODO: Missing traj_length
     all_X, all_r, all_ses, all_trajs, all_states, all_actions = subsample_env_trajs(env)
     all_env_boards = None
     return (
@@ -884,9 +883,6 @@ def get_env_trajs(env, traj_length=3):
                 traj1_ts_y,
                 _,
             ) = create_traj(t1_s0_x, t1_s0_y, action_seq_1, traj_length, env, V)
-            # TODO Fix comparison between float and bool.
-            if t1_partial_r_sum == False:
-                continue
 
             ss2 = start_state[1]
             t2_s0_x, t2_s0_y = ss2
@@ -900,9 +896,6 @@ def get_env_trajs(env, traj_length=3):
                 traj2_ts_y,
                 _,
             ) = create_traj(t2_s0_x, t2_s0_y, action_seq_2, traj_length, env, V)
-            # TODO Fix comparison between float and bool.
-            if t2_partial_r_sum == False:
-                continue
 
             if traj1 == traj2:
                 continue

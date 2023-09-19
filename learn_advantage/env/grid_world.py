@@ -8,6 +8,7 @@ import numpy as np
 
 class Entity(enum.IntEnum):
     """Integer values correspond to the entity type."""
+
     BLANK = 0
     GOAL = enum.auto()
     HOUSE = enum.auto()
